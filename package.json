@@ -3,7 +3,7 @@
     "dotenv": "16.0.1"
   },
   "name": "update-record-cloudflare",
-  "version": "0.8.0",
+  "version": "1.0.0",
   "main": "index.js",
   "scripts": {
     "start": "node --watch src/index.js"
