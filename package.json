@@ -1,0 +1,18 @@
+{
+  "dependencies": {
+    "dotenv": "16.0.1"
+  },
+  "name": "update-record-cloudflare",
+  "version": "0.8.0",
+  "main": "index.js",
+  "scripts": {
+    "start": "node --watch src/index.js"
+  },
+  "keywords": ["dns", "cloudflare", "update", "record", "ip", "ipv4", "ipv6", "ipv4v6", "ipv4v6v6", "server", "home", "no-ip", "noip", "no-ipv4", "noipv4", "no-ipv6", "noipv6", "no-ipv4v6", "noipv4v6", "no-ipv4v6v6", "noipv4v6v6"],
+  "author": "Luciano Emanuel Ricardo - Unicorp",
+  "license": "ISC",
+  "description": "Actualice your ip address in Cloudflare DNS record A",
+  "engines": {
+     "node": ">=19.0.0"
+   }
+}
