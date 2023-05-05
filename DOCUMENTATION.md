@@ -12,7 +12,7 @@ This documentation provides detailed instructions on how to set up and use the C
 
 ## Prerequisites
 
-- Node.js (version 12 or higher)
+- Node.js (version 18 or higher)
 - A Cloudflare account with the necessary DNS records
 - API credentials (email and API key) for your Cloudflare account
 
