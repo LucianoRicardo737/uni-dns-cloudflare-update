@@ -5,11 +5,16 @@ dotenv.config(); // Load environment variables from .env file
 async function updateRecord(zoneId, recordId, nameRecordToUpdate, myIp) {
 
     // Get Cloudflare credentials from environment variables
-    const CLOUDFLARE_EMAIL = process.env.CLOUDFLARE_EMAIL;
-    const CLOUDFLARE_TOKEN = process.env.CLOUDFLARE_TOKEN;
+    const { CLOUDFLARE_EMAIL, CLOUDFLARE_TOKEN } = process.env;
+
+    // Check if environment variables are set
+    if (!CLOUDFLARE_EMAIL || !CLOUDFLARE_TOKEN) {
+        console.error("Missing Cloudflare credentials in environment variables");
+        return false;
+    }
 
     // Define headers for the Cloudflare API request
-    const header = {
+    const headers = {
         'X-Auth-Email': CLOUDFLARE_EMAIL,
         'X-Auth-Key': CLOUDFLARE_TOKEN,
         'Content-Type': 'application/json'
@@ -20,7 +25,7 @@ async function updateRecord(zoneId, recordId, nameRecordToUpdate, myIp) {
         const response = await fetch(
             `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}`,
             {
-                headers: header,
+                headers,
                 method: "PUT",
                 body: JSON.stringify({
                     type: "A",
@@ -35,15 +40,17 @@ async function updateRecord(zoneId, recordId, nameRecordToUpdate, myIp) {
         // Check the response status
         if (response.status === 200) {
             // If the status is 200, the update was successful
-            await response.json();
             console.info("Edit record success");
+            return true;
         } else {
             // If the status is not 200, there was an error
             console.error("Error updating IP:", response.status);
+            return false;
         }
     } catch (error) {
         // Log any errors that occur during the request
         console.error("Error:", error);
+        return false;
     }
 }
 

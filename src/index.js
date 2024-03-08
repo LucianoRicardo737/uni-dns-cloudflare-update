@@ -61,4 +61,10 @@ async function main() {
 main(); // Call main function
 
 // Set interval to call main function every TIME_TO_REFRESH_IN_MINUTES minutes
-setInterval(main, TIME_TO_REFRESH_IN_MINUTES * 60 * 1000);
+const intervalId = setInterval(main, TIME_TO_REFRESH_IN_MINUTES * 60 * 1000);
+
+// Handle any errors that might occur during the setInterval execution
+process.on('unhandledRejection', (reason, promise) => {
+    console.log('Unhandled Rejection at:', promise, 'reason:', reason);
+    clearInterval(intervalId); // Clear the interval if there's an error
+});

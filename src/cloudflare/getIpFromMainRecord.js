@@ -5,8 +5,12 @@ dotenv.config(); // Load environment variables from .env file
 async function getIpFromMainRecord(zoneId, recordId) {
 
     // Get Cloudflare credentials from environment variables
-    const CLOUDFLARE_EMAIL = process.env.CLOUDFLARE_EMAIL;
-    const CLOUDFLARE_TOKEN = process.env.CLOUDFLARE_TOKEN;
+    const { CLOUDFLARE_EMAIL, CLOUDFLARE_TOKEN } = process.env;
+
+    if (!CLOUDFLARE_EMAIL || !CLOUDFLARE_TOKEN) {
+        console.error("Missing Cloudflare credentials in environment variables");
+        return;
+    }
 
     // Define the headers for the Cloudflare API request
     const header = {
@@ -16,8 +20,7 @@ async function getIpFromMainRecord(zoneId, recordId) {
     };
 
     // Define the URL for the Cloudflare API request
-    // If recordId is provided, use it in the URL, otherwise, just use the zoneId
-    const url = recordId ? `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}` : `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`;
+    const url = `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId || ''}`;
 
     try {
         // Make the API request
@@ -34,10 +37,12 @@ async function getIpFromMainRecord(zoneId, recordId) {
         } else {
             // If the response is not successful, log the status code
             console.error("Error getting IP from main record:", response.status);
+            return null;
         }
     } catch (error) {
         // If there is an error in the request, log the error
         console.error("Error:", error);
+        return null;
     }
 }
 
