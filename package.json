@@ -5,6 +5,7 @@
   "name": "update-record-cloudflare",
   "version": "1.0.0",
   "main": "index.js",
+  "type": "module",
   "scripts": {
     "start": "node --watch src/index.js"
   },
@@ -13,6 +14,12 @@
   "license": "ISC",
   "description": "Actualice your ip address in Cloudflare DNS record A",
   "engines": {
-     "node": ">=19.0.0"
-   }
+    "node": ">=19.0.0"
+  },
+  "devDependencies": {
+    "bun-types": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5.0.0"
+  }
 }

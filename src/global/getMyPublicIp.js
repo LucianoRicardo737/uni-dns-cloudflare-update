@@ -1,36 +1,36 @@
+// This function is used to get the public IP of the current machine
 async function getMyPublicIp() {
+    // Variable to store the IP
     let myIp;
 
     try {
-        // Realizar una solicitud para obtener la dirección IP pública
-        // Make a request to get the public IP address
+        // Fetch the IP from the ipify API
         const response = await fetch("https://api.ipify.org?format=json");
 
-        // Verificar si la respuesta es exitosa (status 200)
-        // Check if the response is successful (status 200)
+        // If the response is successful, store the IP
         if (response.status === 200) {
-            // Obtener la dirección IP de la respuesta JSON
-            // Get the IP address from the JSON response
             const data = await response.json();
             myIp = data.ip;
-            console.log(`my ip is ${myIp}`);
+            // Log the IP for debugging purposes
+            console.info(`my ip is ${myIp}`);
         } else {
-            console.log("Error fetching IP:", response.status);
+            // Log an error if the response is not successful
+            console.error("Error fetching IP:", response.status);
         }
     } catch (error) {
-        console.log("Error:", error);
+        // Log any errors that occur during the fetch
+        console.error("Error:", error);
     }
 
-    // Verificar si se obtuvo una dirección IP
-    // Check if an IP address was obtained
+    // If no IP was obtained, log an error and return
     if (!myIp) {
         console.error("Error getting IP");
         return;
     }
 
-    // Retornar la dirección IP pública
-    // Return the public IP address
+    // Return the obtained IP
     return myIp;
 }
 
-module.exports = getMyPublicIp;
+// Export the function for use in other modules
+export default getMyPublicIp;

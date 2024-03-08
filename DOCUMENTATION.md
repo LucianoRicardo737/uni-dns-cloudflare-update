@@ -41,18 +41,20 @@ This documentation provides detailed instructions on how to set up and use the C
 1. Create a `.env` file in the project folder and provide your Cloudflare API credentials (email and API key) and other environment variables as follows:
 
    ```
-   CLOUDFLARE_EMAIL=your_email@example.com
-   CLOUDFLARE_TOKEN=your_api_key
-   DOMAIN_ID=your_domain_id
-   DIRECTION_ID=your_direction_id
-   DIRECTION_NAME=your_direction_name
+   CLOUDFLARE_EMAIL= your_email@example.com 
+   CLOUDFLARE_TOKEN= your_api_key 
+   DOMAIN_ID= your_domain_id 
+   DIRECTION_ID= your_direction_id_1,your_direction_id_2 
+   TIME_TO_REFRESH_IN_MINUTES= 5
+   
    ```
 
-2. Replace the placeholders with your actual Cloudflare account details.
+2. Replace the placeholders with your actual Cloudflare account details. If you have multiple direction IDs or names, separate them with commas.
 
 ## Usage
 
 1. Run the script using the following command:
+
 
    ```
    node index.js
@@ -60,13 +62,16 @@ This documentation provides detailed instructions on how to set up and use the C
 
 2. The script will automatically compare your current public IP address with the IP stored in the Cloudflare DNS record. If the IP addresses do not match, the script will update the DNS record in Cloudflare.
 
-3. By default, the script will run every 15 minutes. You can change the interval by modifying the following line in the `index.js` file:
+3. By default, the script will run every 5 minutes. You can change the interval by modifying the following line in the `index.js` file:
 
    ```
-   setInterval(main, 15 * 60 * 1000);
+   setInterval(main, TIME_TO_REFRESH_IN_MINUTES * 60 * 1000);
    ```
 
-   Replace `15 * 60 * 1000` with your desired interval in milliseconds.
+   Replace `TIME_TO_REFRESH_IN_MINUTES` with your desired interval in minuts.
+   
+
+4. If you have provided multiple direction IDs or names, the script will update all of them.
 
 ## Example Response
 
@@ -75,8 +80,8 @@ Here is an example of a successful DNS record update response:
 ```
 {
   result: {
-    id: 'a1b23c456d7890e1f2g3h4i5j6k7l8m9',
-    zone_id: 'z1o2n3e4i5d6x7y8w9v0u1t2s3r4q5p6',
+    id: 'a1b23c456d7890e1f2g2h4i5j6k7l8m9',
+    zone_id: 'z1o2n3e4i5d6x7y8w3v0u1t2s3r4q5p6',
     zone_name: 'example.com',
     name: 'subdomain.example.com',
     type: 'A',

@@ -1,46 +1,45 @@
-require('dotenv').config();
+import dotenv from "dotenv";
+dotenv.config(); // Load environment variables from .env file
 
+// This function retrieves the IP from the main record in Cloudflare
 async function getIpFromMainRecord(zoneId, recordId) {
-    // Configurar las variables de entorno de Cloudflare
-    // Set up Cloudflare environment variables
+
+    // Get Cloudflare credentials from environment variables
     const CLOUDFLARE_EMAIL = process.env.CLOUDFLARE_EMAIL;
     const CLOUDFLARE_TOKEN = process.env.CLOUDFLARE_TOKEN;
 
-    // Configurar las cabeceras para la solicitud a la API de Cloudflare
-    // Set up headers for the request to the Cloudflare API
+    // Define the headers for the Cloudflare API request
     const header = {
         'X-Auth-Email': CLOUDFLARE_EMAIL,
         'X-Auth-Key': CLOUDFLARE_TOKEN,
         'Content-Type': 'application/json'
     };
 
-    // Construir la URL para la solicitud a la API de Cloudflare
-    // Build the URL for the request to the Cloudflare API
+    // Define the URL for the Cloudflare API request
+    // If recordId is provided, use it in the URL, otherwise, just use the zoneId
     const url = recordId ? `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}` : `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records`;
 
     try {
-        // Realizar la solicitud a la API de Cloudflare
-        // Make the request to the Cloudflare API
+        // Make the API request
         const response = await fetch(url,
             {
                 headers: header,
                 method: "GET",
             }
         );
-
-        // Verificar si la respuesta es exitosa (status 200)
-        // Check if the response is successful (status 200)
+        // If the response is successful, parse the JSON and return the result
         if (response.status === 200) {
-            // Obtener la dirección IP del registro en la respuesta JSON
-            // Get the IP address of the record from the JSON response
             const data = await response.json();
             return data.result;
         } else {
-            console.log("Error getting IP from main record:", response.status);
+            // If the response is not successful, log the status code
+            console.error("Error getting IP from main record:", response.status);
         }
     } catch (error) {
-        console.log("Error:", error);
+        // If there is an error in the request, log the error
+        console.error("Error:", error);
     }
 }
 
-module.exports = getIpFromMainRecord;
+// Export the function for use in other modules
+export default getIpFromMainRecord;

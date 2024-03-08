@@ -1,13 +1,14 @@
-require('dotenv').config();
+import dotenv from "dotenv";
+dotenv.config(); // Load environment variables from .env file
 
+// Function to update a DNS record on Cloudflare
 async function updateRecord(zoneId, recordId, nameRecordToUpdate, myIp) {
-    // Configurar las variables de entorno de Cloudflare
-    // Set up Cloudflare environment variables
+
+    // Get Cloudflare credentials from environment variables
     const CLOUDFLARE_EMAIL = process.env.CLOUDFLARE_EMAIL;
     const CLOUDFLARE_TOKEN = process.env.CLOUDFLARE_TOKEN;
 
-    // Configurar las cabeceras para la solicitud a la API de Cloudflare
-    // Set up headers for the request to the Cloudflare API
+    // Define headers for the Cloudflare API request
     const header = {
         'X-Auth-Email': CLOUDFLARE_EMAIL,
         'X-Auth-Key': CLOUDFLARE_TOKEN,
@@ -15,8 +16,7 @@ async function updateRecord(zoneId, recordId, nameRecordToUpdate, myIp) {
     };
 
     try {
-        // Realizar la solicitud PUT para actualizar el registro DNS
-        // Make a PUT request to update the DNS record
+        // Send a PUT request to the Cloudflare API to update the DNS record
         const response = await fetch(
             `https://api.cloudflare.com/client/v4/zones/${zoneId}/dns_records/${recordId}`,
             {
@@ -32,20 +32,20 @@ async function updateRecord(zoneId, recordId, nameRecordToUpdate, myIp) {
             }
         );
 
-        // Verificar si la respuesta es exitosa (status 200)
-        // Check if the response is successful (status 200)
+        // Check the response status
         if (response.status === 200) {
-            // Procesar la respuesta JSON
-            // Process the JSON response
-            const data = await response.json();
-            console.log(data);
-            console.log("Edit record success");
+            // If the status is 200, the update was successful
+            await response.json();
+            console.info("Edit record success");
         } else {
-            console.log("Error updating IP:", response.status);
+            // If the status is not 200, there was an error
+            console.error("Error updating IP:", response.status);
         }
     } catch (error) {
-        console.log("Error:", error);
+        // Log any errors that occur during the request
+        console.error("Error:", error);
     }
 }
 
-module.exports = updateRecord;
+// Export the updateRecord function as the default export of this module
+export default updateRecord;

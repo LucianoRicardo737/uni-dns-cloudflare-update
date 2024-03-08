@@ -1,53 +1,64 @@
-const getIpFromMainRecord = require("./cloudflare/getIpFromMainRecord");
-const updateRecord = require("./cloudflare/updateRecord");
-const getMyPublicIp = require("./global/getMyPublicIp");
-require('dotenv').config()
+import getIpFromMainRecord from "./cloudflare/getIpFromMainRecord.js"; // Import function to get IP from main record
+import updateRecord from "./cloudflare/updateRecord.js"; // Import function to update record
+import getMyPublicIp from "./global/getMyPublicIp.js"; // Import function to get public IP
 
-// Configuración de variables de entorno
-const DOMAIN_ID = process.env.DOMAIN_ID;
-const DIRECTION_ID = process.env.DIRECTION_ID;
-const DIRECTION_NAME = process.env.DIRECTION_NAME;
+import dotenv from "dotenv"; // Import dotenv to use environment variables
+dotenv.config(); // Configure dotenv
 
-let ipFromRecord;
+// Destructure environment variables
+const {
+    DOMAIN_ID,
+    DIRECTION_ID,
+    TIME_TO_REFRESH_IN_MINUTES
+} = process.env;
 
+let ipFromRecord = []; // Initialize array to store IP from record
+
+// Main function
 async function main() {
-    console.log("start");
-    console.time("start");
+    console.time("start"); // Start timer
 
-    // Obtener la dirección IP pública actual
-    // Get current public IP address
-    const myIp = await getMyPublicIp();
+    try {
+        const myIp = await getMyPublicIp(); // Get public IP
 
-    // Verificar si ipFromRecord no está establecido
-    // Check if ipFromRecord is not set
-    if (!ipFromRecord) {
-        console.log("fetched ip from cloudflare");
+        const ids_to_update = DIRECTION_ID.split(","); // Split DIRECTION_ID into array
 
-        // Obtener la dirección IP del registro en Cloudflare
-        // Get IP address from record in Cloudflare
-        const remoteIp = await getIpFromMainRecord(DOMAIN_ID, DIRECTION_ID);
-        ipFromRecord = remoteIp.content.toString();
-    } else {
-        console.log("fetched ip from cache");
+        // If ipFromRecord is empty, fetch IP from Cloudflare
+        if (ipFromRecord.length <= 0) {
+            console.info("fetched ip from cloudflare");
+
+            // Loop through ids_to_update
+            for (let ip of ids_to_update) {
+                const remoteIp = await getIpFromMainRecord(DOMAIN_ID, ip); // Get IP from main record
+                // Push remoteIp to ipFromRecord
+                ipFromRecord.push({
+                    id: remoteIp.id.toString(),
+                    name: remoteIp.name.toString(),
+                    content: remoteIp.content.toString()
+                });
+            }
+        } else {
+            console.info("fetched ip from cache"); // If ipFromRecord is not empty, fetch IP from cache
+        }
+
+        // Loop through ipFromRecord
+        for (let record of ipFromRecord) {
+            // If record content is the same as myIp, log "IPs are the same"
+            if (record.content === myIp.toString()) {
+                console.info("IPs are the same");
+            } else {
+                // If record content is not the same as myIp, update record
+                await updateRecord(DOMAIN_ID, record.id, record.name, myIp);
+            }
+        }
+    } catch (error) {
+        console.error("Error:", error); // Log error
     }
 
-    // Comparar las direcciones IP local y remota
-    // Compare local and remote IP addresses
-    if (ipFromRecord === myIp.toString()) {
-        console.log("IPs are the same");
-    } else {
-        // Si las direcciones IP no son iguales, actualizar el registro en Cloudflare
-        // If IP addresses are not the same, update record in Cloudflare
-        await updateRecord(DOMAIN_ID, DIRECTION_ID, DIRECTION_NAME, myIp);
-    }
-
-    console.timeEnd("start");
+    console.timeEnd("start"); // End timer
 }
 
-// Ejecutar la función principal una vez
-// Run the main function once
-main();
+main(); // Call main function
 
-// Ejecutar la función principal cada 15 minutos
-// Run the main function every 15 minutes
-setInterval(main, 15 * 60 * 1000);
+// Set interval to call main function every TIME_TO_REFRESH_IN_MINUTES minutes
+setInterval(main, TIME_TO_REFRESH_IN_MINUTES * 60 * 1000);
