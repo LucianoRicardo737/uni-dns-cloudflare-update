@@ -44,7 +44,7 @@ This documentation provides detailed instructions on how to set up and use the C
    CLOUDFLARE_EMAIL= your_email@example.com 
    CLOUDFLARE_TOKEN= your_api_key 
    DOMAIN_ID= your_domain_id_1:your_domain_id_2 
-   DIRECTION_ID= your_direction_id_1,your_direction_id_2:your_direction_domain_2_id_1,your_direction_domain_2_id_2
+   DIRECTION_ID= your_direction_domain_1_id_1,your_direction_domain_1_id_2:your_direction_domain_2_id_1,your_direction_domain_2_id_2
    TIME_TO_REFRESH_IN_MINUTES= 5
    
    ```
