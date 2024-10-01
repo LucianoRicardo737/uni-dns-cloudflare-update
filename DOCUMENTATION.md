@@ -43,18 +43,17 @@ This documentation provides detailed instructions on how to set up and use the C
    ```
    CLOUDFLARE_EMAIL= your_email@example.com 
    CLOUDFLARE_TOKEN= your_api_key 
-   DOMAIN_ID= your_domain_id 
-   DIRECTION_ID= your_direction_id_1,your_direction_id_2 
+   DOMAIN_ID= your_domain_id_1:your_domain_id_2 
+   DIRECTION_ID= your_direction_id_1,your_direction_id_2:your_direction_domain_2_id_1,your_direction_domain_2_id_2
    TIME_TO_REFRESH_IN_MINUTES= 5
    
    ```
 
-2. Replace the placeholders with your actual Cloudflare account details. If you have multiple direction IDs or names, separate them with commas.
+2. Replace the placeholders with your actual Cloudflare account details. If you have multiple domain IDs, separate them with a colon (`:`). If you have multiple direction IDs or names, separate them with commas.
 
 ## Usage
 
 1. Run the script using the following command:
-
 
    ```
    node index.js
@@ -68,15 +67,13 @@ This documentation provides detailed instructions on how to set up and use the C
    setInterval(main, TIME_TO_REFRESH_IN_MINUTES * 60 * 1000);
    ```
 
-   Replace `TIME_TO_REFRESH_IN_MINUTES` with your desired interval in minuts.
-   
+   Replace `TIME_TO_REFRESH_IN_MINUTES` with your desired interval in minutes.
 
-4. If you have provided multiple direction IDs or names, the script will update all of them.
+4. If you have provided multiple domain IDs or direction IDs, the script will update all of them.
 
 ## Example Response
 
 Here is an example of a successful DNS record update response:
-
 ```
 {
   result: {

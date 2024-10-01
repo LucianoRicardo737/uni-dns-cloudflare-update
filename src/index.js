@@ -21,21 +21,30 @@ async function main() {
     try {
         const myIp = await getMyPublicIp(); // Get public IP
 
-        const ids_to_update = DIRECTION_ID.split(","); // Split DIRECTION_ID into array
+        // Split DOMAIN_ID and DIRECTION_ID by ':'
+        const domainIds = DOMAIN_ID.split(":");
+        const directionIds = DIRECTION_ID.split(":");
 
         // If ipFromRecord is empty, fetch IP from Cloudflare
         if (ipFromRecord.length <= 0) {
             console.info("fetched ip from cloudflare");
 
-            // Loop through ids_to_update
-            for (let ip of ids_to_update) {
-                const remoteIp = await getIpFromMainRecord(DOMAIN_ID, ip); // Get IP from main record
-                // Push remoteIp to ipFromRecord
-                ipFromRecord.push({
-                    id: remoteIp.id.toString(),
-                    name: remoteIp.name.toString(),
-                    content: remoteIp.content.toString()
-                });
+            // Loop through each domainId and its corresponding directionIds
+            for (let i = 0; i < domainIds.length; i++) {
+                const domainId = domainIds[i];
+                const ids_to_update = directionIds[i].split(","); // Split DIRECTION_ID for the current domain
+
+                // Loop through ids_to_update
+                for (let ip of ids_to_update) {
+                    const remoteIp = await getIpFromMainRecord(domainId, ip); // Get IP from main record
+                    // Push remoteIp to ipFromRecord
+                    ipFromRecord.push({
+                        id: remoteIp.id.toString(),
+                        name: remoteIp.name.toString(),
+                        content: remoteIp.content.toString(),
+                        domainId: domainId // Store domainId for later use
+                    });
+                }
             }
         } else {
             console.info("fetched ip from cache"); // If ipFromRecord is not empty, fetch IP from cache
@@ -47,8 +56,8 @@ async function main() {
             if (record.content === myIp.toString()) {
                 console.info("IPs are the same");
             } else {
-                // If record content is not the same as myIp, update record
-                await updateRecord(DOMAIN_ID, record.id, record.name, myIp);
+                // If record content is not the same as myIp, update record only if domainId matches
+                await updateRecord(record.domainId, record.id, record.name, myIp);
             }
         }
     } catch (error) {
